@@ -7,6 +7,8 @@ XStream-Prime is a backend clone of Prime Video built with Node.js, Express, and
 ---
 
 ✅ XStream-Prime – Completed Backend Features (Production-Ready)
+
+
 🔐 1. Authentication System (JWT-based)
 
     Register: /api/auth/register
