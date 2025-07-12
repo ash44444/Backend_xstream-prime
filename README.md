@@ -6,186 +6,123 @@ XStream-Prime is a backend clone of Prime Video built with Node.js, Express, and
 
 ---
 
-## 🔐 1. Authentication (JWT)
+✅ XStream-Prime – Completed Backend Features (Production-Ready)
+🔐 1. Authentication System (JWT-based)
 
-### ➤ Register User/Admin
+    Register: /api/auth/register
 
-POST /api/auth/register
+        Includes isAdmin role flag
 
-**Body** (JSON):
-```json
-{
-  "name": "Ashish Admin",
-  "email": "admin@example.com",
-  "password": "123456",
-  "isAdmin": true
-}
+    Login: /api/auth/login
 
-➤ Login
+    Middleware: Auth protection & role-based access
 
-POST /api/auth/login
+    Logout: Sessionless JWT; logout by removing token client-side
 
-Body (JSON):
+👥 2. Multi-Profile Support (like Netflix/Prime)
 
-{
-  "email": "admin@example.com",
-  "password": "123456"
-}
+    One user account → Multiple profiles
 
-Returns: JWT token, user info, and isAdmin flag.
-👥 2. Profile Management (Multiple Profiles per Account)
-➤ Create Profile
+    Endpoints:
 
-POST /api/profiles
+        POST /api/profiles — create profile
 
-Headers: Authorization: Bearer <token>
-Body:
+        GET /api/profiles — list all profiles
 
-{
-  "name": "Harper",
-  "avatar": "👩",
-  "isKids": false
-}
+        DELETE /api/profiles/:id — delete profile
 
-➤ Get All Profiles
+    Each profile has own watch history/feed
 
-GET /api/profiles
+📽️ 3. Video Upload & Streaming (Self-Made Video Player)
 
-➤ Delete Profile
+    Admin-only uploads
 
-DELETE /api/profiles/:id
+    Supports:
 
-📽️ 3. Video Upload + Streaming
-➤ Upload Video (Admin Only)
+        Video file (.mp4)
 
-POST /api/videos/upload
+        Thumbnail file (.jpg/.png)
 
-Headers:
+        Genre/category tags
 
-    Authorization: Bearer <token>
+    Endpoints:
 
-    Content-Type: multipart/form-data
+        POST /api/videos/upload — admin uploads
 
-Body (form-data):
+        GET /api/videos/stream/:id — stream video with range headers
 
-    video → upload .mp4
+🧠 4. Watch History Tracking
 
-    thumbnail → upload .jpg/.png
+    Resume & continue watching logic
 
-    title, description, genre
+    Endpoints:
 
-➤ Stream Video
+        POST /api/watch-history/update — update progress
 
-GET /api/videos/stream/:id
+        GET /api/watch-history — list watched videos per profile
 
-Streams .mp4 video with range support. No auth required.
-🧠 4. Watch History (Resume / Continue Watching)
-➤ Update Watch Progress
+        Built-in pagination & "Continue Watching" logic
 
-POST /api/watch-history/update
+🏠 5. Feed System
 
-Body:
+    Personalized home feed API
 
-{
-  "videoId": "videoId",
-  "progress": 45,
-  "completed": false
-}
+    Continue watching + Latest videos
 
-➤ Get Watch History
+    Supports ?genre=Comedy filtering
 
-GET /api/watch-history
+    Endpoint: GET /api/feed
 
-🏠 5. Feed System (Home Page)
-➤ Get Personalized Feed
+🗑️ 6. Admin-only Delete API
 
-GET /api/feed
+    Delete a video by ID
 
-Optional Query:
+    Endpoint: DELETE /api/videos/:id
 
-/api/feed?genre=Action
+📚 7. Movie Catalog API
 
-If no active profile selected:
+    Optional separate Movie model (if not using Video model directly)
 
-{
-  "message": "Please select a profile to continue"
-}
+    Endpoint: GET /api/movies?genre=Action&search=spiderman
 
-🗑️ 6. Admin Video Delete
-➤ Delete Video by ID
+📂 8. File Handling
 
-DELETE /api/videos/:id
+    Multer-based middleware
 
-Headers: Authorization (Admin token)
-🔄 7. Profile Switching
-➤ Switch Profile
-
-PATCH /api/auth/switch-profile
-
-Body:
-
-{
-  "profileId": "your-profile-id"
-}
-
-➤ Logout (clear profile/session)
-
-POST /api/auth/logout
-
-🧩 Bonus Features
-
-    ✅ Continue Watching Feed
-
-    ✅ Genre Filtering
-
-    ✅ Admin Middleware
-
-    ✅ Self-made Video Player Support (via /stream/:id)
-
-    ✅ Multer File Uploads (separated by /uploads/videos and /uploads/thumbnails)
-
-🧾 Summary Table
-Feature	Endpoint	Method	Auth
-Register	/api/auth/register	POST	❌
-Login	/api/auth/login	POST	❌
-Create Profile	/api/profiles	POST	✅
-Get Profiles	/api/profiles	GET	✅
-Delete Profile	/api/profiles/:id	DELETE	✅
-Upload Video (Admin)	/api/videos/upload	POST	✅ (Admin)
-Stream Video	/api/videos/stream/:id	GET	❌
-Update Watch Progress	/api/watch-history/update	POST	✅
-Get Watch History	/api/watch-history	GET	✅
-Get Feed	/api/feed	GET	✅
-Delete Video (Admin)	/api/videos/:id	DELETE	✅ (Admin)
-Switch Active Profile	/api/auth/switch-profile	PATCH	✅
-Logout	/api/auth/logout	POST	✅
-⚙️ Tech Stack
-
-    Node.js + Express
-
-    MongoDB + Mongoose
-
-    JWT Authentication
-
-    Multer File Uploads
-
-    Postman Tested
-
-    Modular Folder Structure
-
-🧠 Dev Tips
-
-    Add isAdmin manually:
-
-db.users.updateOne({ email: "admin@example.com" }, { $set: { isAdmin: true } })
-
-    Uploads stored in:
+    Uploads are separated:
 
         /uploads/videos
 
         /uploads/thumbnails
 
-✅ Backend Status
+🎭 9. Profile Switching System
 
-✔️ Fully Complete & Production Ready
-Tested with Postman, follows real-world backend structure like Netflix / Prime Video.
+    Profile context stored in JWT (or middleware memory)
+
+    Blocks content access unless active profile is selected
+
+    ✅ Throws error like:
+
+    {
+      "message": "Please select a profile to continue"
+    }
+
+✅ BONUS: Admin Tools
+
+    Directly set isAdmin: true during registration or by:
+
+    db.users.updateOne({ email: "admin@example.com" }, { $set: { isAdmin: true } })
+
+✅ Tech Stack (Backend)
+
+    Node.js + Express
+
+    MongoDB + Mongoose
+
+    JWT Auth
+
+    Multer for file uploads
+
+    Custom middleware for auth/admin/profile checks
+
+    Postman tested endpoints
